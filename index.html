@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>BlockCoin - Mini App</title>
+  <title>Tap2Mine - Retro Edition</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -18,240 +18,172 @@
     }
 
     body {
-      background-color: #0e1621;
+      background-color: #12121c;
       color: #ffffff;
       font-family: 'Press Start 2P', monospace;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       height: 100vh;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       image-rendering: pixelated;
     }
 
-    /* Top Header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 20px;
-      background: #17212b;
-      border-bottom: 2px solid #232e3c;
-      font-size: 10px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #5288c1;
-    }
-
-    .stats-pill {
-      display: flex;
-      gap: 12px;
-    }
-
-    .stat-badge {
-      background: #232e3c;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 9px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Main Content Pages */
-    .page-content {
-      flex: 1;
+    /* Screen Management */
+    .screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 15px;
-      overflow-y: auto;
+      justify-content: space-between;
+      padding: 20px;
     }
 
-    .page-content.active {
+    .screen.active {
       display: flex;
     }
 
-    /* Game Screen Styling */
-    .game-screen {
-      width: 100%;
-      max-width: 360px;
-      background: #17212b;
-      border: 3px solid #232e3c;
-      border-radius: 12px;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    /* 1. START SCREEN STYLING */
+    #start-screen {
+      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop') center/cover;
+      justify-content: center;
+      gap: 40px;
     }
 
-    .scenery-box {
+    .pixel-title {
+      font-size: 22px;
+      color: #ffd700;
+      text-shadow: 3px 3px #000;
+      text-align: center;
+    }
+
+    .start-btn {
+      background: #4caf50;
+      color: #fff;
+      border: 4px solid #2e7d32;
+      padding: 16px 32px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      box-shadow: inset 4px 4px #81c784, inset -4px -4px #1b5e20, 0 6px 0 #000;
+      cursor: pointer;
+      transition: transform 0.05s ease;
+    }
+
+    .start-btn:active {
+      transform: translateY(4px);
+      box-shadow: inset 4px 4px #1b5e20, inset -4px -4px #81c784, 0 2px 0 #000;
+    }
+
+    /* 2. MAIN GAME SCREEN STYLING */
+    #game-screen {
+      background: linear-gradient(to bottom, #3b82f6, #10b981);
+      justify-content: space-between;
+    }
+
+    /* Top Bar */
+    .top-bar {
       width: 100%;
-      height: 140px;
-      background: linear-gradient(to bottom, #4ea3e3, #76c442);
-      border-radius: 8px;
-      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9px;
+    }
+
+    .top-left, .top-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 8px;
+    }
+
+    .icon-btn {
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid rgba(255,255,255,0.3);
+      padding: 6px 8px;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 10px;
+    }
+
+    /* Center Mine Area (Mystery Box) */
+    .center-mining-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .mystery-box {
+      width: 150px;
+      height: 150px;
+      background: #facc15;
+      border: 6px solid #ca8a04;
+      box-shadow: inset 8px 8px #fde047, inset -8px -8px #a16207, 0 10px 0 #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #232e3c;
-      margin-bottom: 15px;
-    }
-
-    .avatar-emoji {
-      font-size: 50px;
-      animation: bounce 1.5s infinite alternate;
-    }
-
-    @keyframes bounce {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-6px); }
-    }
-
-    .coin-display {
-      font-size: 16px;
-      color: #ffd700;
-      margin-bottom: 12px;
-      text-shadow: 1px 1px #000;
-    }
-
-    .mine-big-btn {
-      width: 100%;
-      background: #2ea6ff;
-      color: white;
-      border: none;
-      padding: 14px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      border-radius: 8px;
+      font-size: 60px;
+      color: #713f12;
+      text-shadow: 3px 3px #fde047;
       cursor: pointer;
-      box-shadow: 0 4px 0 #1b6fc2;
-      transition: all 0.05s ease;
-      margin-bottom: 15px;
+      transition: transform 0.05s ease;
+      position: relative;
     }
 
-    .mine-big-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #1b6fc2;
+    .mystery-box:active {
+      transform: scale(0.93);
     }
 
-    /* Energy Bar */
-    .energy-wrapper {
-      text-align: left;
-      font-size: 8px;
-      margin-bottom: 12px;
-    }
-
-    .energy-bar-bg {
-      background: #0e1621;
-      border: 2px solid #232e3c;
-      height: 12px;
-      border-radius: 6px;
-      margin-top: 4px;
-      overflow: hidden;
-    }
-
-    .energy-fill {
-      background: #ffaa00;
-      height: 100%;
+    /* Bottom Action Bar */
+    .bottom-bar {
       width: 100%;
-      transition: width 0.1s linear;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* Quick Menu Buttons */
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .action-btn {
-      background: #232e3c;
-      border: none;
+    .pixel-action-btn {
+      background: #8b5a2b;
       color: #fff;
+      border: 3px solid #4a2f13;
+      padding: 10px 14px;
       font-family: 'Press Start 2P', monospace;
-      font-size: 7px;
-      padding: 10px 4px;
+      font-size: 8px;
       border-radius: 6px;
+      box-shadow: 0 4px 0 #000;
       cursor: pointer;
       display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 5px;
-      transition: background 0.2s;
     }
 
-    .action-btn:hover {
-      background: #2b3848;
+    .pixel-action-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #000;
     }
 
-    /* Prototype Box */
-    .prototype-box {
-      background: #17212b;
-      border: 2px solid #232e3c;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 7px;
-      text-align: center;
-      color: #8696a7;
-      margin-top: 10px;
-      line-height: 1.4;
-    }
-
-    /* Generic Page Styling for Tabs */
-    .placeholder-title {
-      font-size: 12px;
-      color: #5288c1;
-      margin-bottom: 15px;
-    }
-
-    .placeholder-text {
-      font-size: 8px;
-      color: #8696a7;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    /* Bottom Navigation Bar */
-    .nav-bar {
-      display: flex;
-      background: #17212b;
-      border-top: 2px solid #232e3c;
-      height: 60px;
-    }
-
-    .nav-item {
-      flex: 1;
-      background: none;
-      border: none;
-      color: #8696a7;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 7px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .nav-item.active {
-      color: #2ea6ff;
-    }
-
-    /* Floating Tap Text Animation */
+    /* Floating Text Animation */
     .popup-text {
       position: absolute;
-      color: #ffd700;
-      font-size: 12px;
+      color: #fff700;
+      font-size: 14px;
       animation: floatUp 0.6s ease-out forwards;
       pointer-events: none;
-      text-shadow: 1px 1px #000;
+      text-shadow: 2px 2px #000;
     }
 
     @keyframes floatUp {
@@ -262,82 +194,43 @@
 </head>
 <body>
 
-  <!-- Top Header -->
-  <div class="header">
-    <div class="brand">
-      ⛏️ <b>BLOCKCOIN</b>
-    </div>
-    <div class="stats-pill">
-      <div class="stat-badge">🪙 <span id="top-coins">0</span></div>
-      <div class="stat-badge">⚡ <span id="top-energy">12/12</span></div>
-    </div>
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen active">
+    <div class="pixel-title">Tap2Mine</div>
+    <button class="start-btn" onclick="startGame()">START</button>
+    <div style="font-size: 7px; opacity: 0.8; text-shadow: 1px 1px #000;">BlockCoin v1.0</div>
   </div>
 
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page-content active">
-    <div class="game-screen">
-      <div class="scenery-box">
-        <div class="avatar-emoji">🧑‍🌾</div>
+  <!-- MAIN GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="top-left">
+        <button class="icon-btn" onclick="alert('Settings opened')">⚙️</button>
+        <button class="icon-btn" onclick="alert('Watch AD for bonus energy!')">🎬 AD</button>
       </div>
+      <div class="top-right">
+        <div class="badge">⚡ <span id="energy-count">100</span>/100</div>
+        <div class="badge">🪙 <span id="coin-count">1000</span></div>
+      </div>
+    </div>
 
-      <div class="coin-display">🪙 <span id="ore-count">0</span> Coins</div>
+    <!-- Center Mystery Block -->
+    <div class="center-mining-area">
+      <div class="mystery-box" id="mine-box">
+        ?
+      </div>
+    </div>
 
-      <button class="mine-big-btn" id="mine-btn">
-        ⛏️ TAP TO MINE +1
+    <!-- Bottom Bar (Shop & Withdraw) -->
+    <div class="bottom-bar">
+      <button class="pixel-action-btn" onclick="openShop()">
+        🛒 Shop
       </button>
-
-      <div class="energy-wrapper">
-        <div>Energy</div>
-        <div class="energy-bar-bg">
-          <div class="energy-fill" id="energy-fill"></div>
-        </div>
-      </div>
-
-      <div class="quick-actions">
-        <button class="action-btn" onclick="alert('Daily Reward coming soon!')">🎁<span>Daily Reward</span></button>
-        <button class="action-btn" onclick="alert('Missions coming soon!')">📋<span>Missions</span></button>
-        <button class="action-btn" onclick="alert('Referral system coming soon!')">👥<span>Referral</span></button>
-      </div>
+      <button class="pixel-action-btn" style="background: #b91c1c; border-color: #7f1d1d;" onclick="openWithdraw()">
+        💰 Withdraw
+      </button>
     </div>
-
-    <div class="prototype-box">
-      🎮 Prototype v0.2<br>
-      Next: Telegram login, cloud save, upgrades shop & leaderboard.
-    </div>
-  </div>
-
-  <!-- INVENTORY PAGE -->
-  <div id="page-inventory" class="page-content">
-    <div class="placeholder-title">📦 INVENTORY</div>
-    <div class="placeholder-text">Aapke mined items aur special tools yahan dikhenge. (Coming Soon!)</div>
-  </div>
-
-  <!-- SHOP PAGE -->
-  <div id="page-shop" class="page-content">
-    <div class="placeholder-title">🛒 UPGRADES SHOP</div>
-    <div class="placeholder-text">Yahan se aap apni mining power aur max energy ko upgrade kar sakenge!</div>
-  </div>
-
-  <!-- SETTINGS PAGE -->
-  <div id="page-settings" class="page-content">
-    <div class="placeholder-title">⚙️ SETTINGS</div>
-    <div class="placeholder-text">Account details, sound options aur support settings yahan hongi.</div>
-  </div>
-
-  <!-- Bottom Navigation Bar -->
-  <div class="nav-bar">
-    <button class="nav-item active" onclick="switchTab('home', this)">
-      🏠<span>Home</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('inventory', this)">
-      🎒<span>Inventory</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('shop', this)">
-      🛒<span>Shop</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('settings', this)">
-      ⚙️<span>Settings</span>
-    </button>
   </div>
 
   <script>
@@ -347,39 +240,42 @@
       tg.expand();
     }
 
-    let ores = 0;
-    let energy = 12;
-    const maxEnergy = 12;
+    let coins = 1000;
+    let energy = 100;
+    const maxEnergy = 100;
 
-    const oreText = document.getElementById('ore-count');
-    const topCoinsText = document.getElementById('top-coins');
-    const topEnergyText = document.getElementById('top-energy');
-    const energyFill = document.getElementById('energy-fill');
-    const mineBtn = document.getElementById('mine-btn');
+    const coinText = document.getElementById('coin-count');
+    const energyText = document.getElementById('energy-count');
+    const mineBox = document.getElementById('mine-box');
 
-    // Mining Action
-    mineBtn.addEventListener('pointerdown', (e) => {
-      if (energy <= 0) return;
+    function startGame() {
+      document.getElementById('start-screen').classList.remove('active');
+      document.getElementById('game-screen').classList.add('active');
+    }
 
-      ores += 1;
+    // Mining Click Logic
+    mineBox.addEventListener('pointerdown', (e) => {
+      if (energy <= 0) {
+        alert('Energy khatam ho gayi! Thodi der wait karein.');
+        return;
+      }
+
+      coins += 1;
       energy -= 1;
       updateUI();
 
       if (tg?.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
+        tg.HapticFeedback.impactOccurred('medium');
       }
 
       showFloatingText(e.clientX, e.clientY, "+1");
     });
 
     function updateUI() {
-      oreText.innerText = ores;
-      topCoinsText.innerText = ores;
-      topEnergyText.innerText = `${energy}/${maxEnergy}`;
-      energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
+      coinText.innerText = coins;
+      energyText.innerText = energy;
     }
 
-    // Floating animation on tap
     function showFloatingText(x, y, text) {
       const el = document.createElement('div');
       el.className = 'popup-text';
@@ -390,25 +286,20 @@
       setTimeout(() => el.remove(), 600);
     }
 
-    // Energy Regen (Har 2 second mein 1 energy wapas aayegi)
+    // Energy Recovery over time
     setInterval(() => {
       if (energy < maxEnergy) {
         energy = Math.min(maxEnergy, energy + 1);
         updateUI();
       }
-    }, 2000);
+    }, 1500);
 
-    // Navigation Switcher Function
-    function switchTab(pageName, btnElement) {
-      document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.remove('active');
-      });
-      document.querySelectorAll('.nav-item').forEach(nav => {
-        nav.classList.remove('active');
-      });
+    function openShop() {
+      alert('Upgrades Shop: Yahan se aap items kharid sakenge!');
+    }
 
-      document.getElementById('page-' + pageName).classList.add('active');
-      btnElement.classList.add('active');
+    function openWithdraw() {
+      alert('Withdraw system jaldi aayega!');
     }
   </script>
 </body>
