@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Tap2Mine</title>
+  <title>BlockCoin - Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -13,89 +13,146 @@
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 20px;
-      background-color: #1a1a24;
+      background-color: #0e1621;
       color: #ffffff;
       font-family: 'Press Start 2P', monospace;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: space-between;
       height: 100vh;
+      overflow: hidden;
       image-rendering: pixelated;
     }
 
+    /* Top Header */
     .header {
-      text-align: center;
-      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: #17212b;
+      border-bottom: 2px solid #232e3c;
+      font-size: 10px;
     }
 
-    .score-container {
-      font-size: 20px;
-      color: #55ff55;
-      margin-top: 10px;
-      text-shadow: 2px 2px #000;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #5288c1;
     }
 
-    .mine-container {
-      position: relative;
-      cursor: pointer;
+    .stats-pill {
+      display: flex;
+      gap: 12px;
     }
 
-    .pixel-block {
-      width: 160px;
-      height: 160px;
-      background: #8b5a2b;
-      border: 8px solid #4a2f13;
-      box-shadow: inset 8px 8px #a76d35, inset -8px -8px #331e08, 0 10px 0 #000;
-      position: relative;
-      transition: transform 0.05s ease;
+    .stat-badge {
+      background: #232e3c;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .pixel-block::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 40px;
-      background: #4ca634;
-      box-shadow: inset 4px 4px #6bd64d, inset -4px -4px #2f6920;
+    /* Main Content Pages */
+    .page-content {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      overflow-y: auto;
     }
 
-    .pixel-block:active {
-      transform: scale(0.95);
+    .page-content.active {
+      display: flex;
     }
 
-    .popup-text {
-      position: absolute;
-      color: #ffd700;
-      font-size: 16px;
-      animation: floatUp 0.6s ease-out forwards;
-      pointer-events: none;
-      text-shadow: 2px 2px #000;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-60px); }
-    }
-
-    .energy-container {
+    /* Game Screen Styling */
+    .game-screen {
       width: 100%;
-      max-width: 320px;
-      margin-bottom: 20px;
+      max-width: 360px;
+      background: #17212b;
+      border: 3px solid #232e3c;
+      border-radius: 12px;
+      padding: 15px;
       text-align: center;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .scenery-box {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(to bottom, #4ea3e3, #76c442);
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #232e3c;
+      margin-bottom: 15px;
+    }
+
+    .avatar-emoji {
+      font-size: 50px;
+      animation: bounce 1.5s infinite alternate;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-6px); }
+    }
+
+    .coin-display {
+      font-size: 16px;
+      color: #ffd700;
+      margin-bottom: 12px;
+      text-shadow: 1px 1px #000;
+    }
+
+    .mine-big-btn {
+      width: 100%;
+      background: #2ea6ff;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #1b6fc2;
+      transition: all 0.05s ease;
+      margin-bottom: 15px;
+    }
+
+    .mine-big-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1b6fc2;
+    }
+
+    /* Energy Bar */
+    .energy-wrapper {
+      text-align: left;
+      font-size: 8px;
+      margin-bottom: 12px;
     }
 
     .energy-bar-bg {
-      background: #222;
-      border: 4px solid #fff;
-      height: 24px;
-      margin-top: 8px;
-      position: relative;
+      background: #0e1621;
+      border: 2px solid #232e3c;
+      height: 12px;
+      border-radius: 6px;
+      margin-top: 4px;
+      overflow: hidden;
     }
 
     .energy-fill {
@@ -104,26 +161,183 @@
       width: 100%;
       transition: width 0.1s linear;
     }
+
+    /* Quick Menu Buttons */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: #232e3c;
+      border: none;
+      color: #fff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      padding: 10px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #2b3848;
+    }
+
+    /* Prototype Box */
+    .prototype-box {
+      background: #17212b;
+      border: 2px solid #232e3c;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 7px;
+      text-align: center;
+      color: #8696a7;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    /* Generic Page Styling for Tabs */
+    .placeholder-title {
+      font-size: 12px;
+      color: #5288c1;
+      margin-bottom: 15px;
+    }
+
+    .placeholder-text {
+      font-size: 8px;
+      color: #8696a7;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Bottom Navigation Bar */
+    .nav-bar {
+      display: flex;
+      background: #17212b;
+      border-top: 2px solid #232e3c;
+      height: 60px;
+    }
+
+    .nav-item {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #8696a7;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: #2ea6ff;
+    }
+
+    /* Floating Tap Text Animation */
+    .popup-text {
+      position: absolute;
+      color: #ffd700;
+      font-size: 12px;
+      animation: floatUp 0.6s ease-out forwards;
+      pointer-events: none;
+      text-shadow: 1px 1px #000;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
   </style>
 </head>
 <body>
 
+  <!-- Top Header -->
   <div class="header">
-    <div id="username" style="font-size: 10px; color: #aaa;">Miner</div>
-    <div class="score-container">
-      💎 <span id="ore-count">0</span>
+    <div class="brand">
+      ⛏️ <b>BLOCKCOIN</b>
+    </div>
+    <div class="stats-pill">
+      <div class="stat-badge">🪙 <span id="top-coins">0</span></div>
+      <div class="stat-badge">⚡ <span id="top-energy">12/12</span></div>
     </div>
   </div>
 
-  <div class="mine-container" id="mine-btn">
-    <div class="pixel-block" id="block"></div>
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page-content active">
+    <div class="game-screen">
+      <div class="scenery-box">
+        <div class="avatar-emoji">🧑‍🌾</div>
+      </div>
+
+      <div class="coin-display">🪙 <span id="ore-count">0</span> Coins</div>
+
+      <button class="mine-big-btn" id="mine-btn">
+        ⛏️ TAP TO MINE +1
+      </button>
+
+      <div class="energy-wrapper">
+        <div>Energy</div>
+        <div class="energy-bar-bg">
+          <div class="energy-fill" id="energy-fill"></div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button class="action-btn" onclick="alert('Daily Reward coming soon!')">🎁<span>Daily Reward</span></button>
+        <button class="action-btn" onclick="alert('Missions coming soon!')">📋<span>Missions</span></button>
+        <button class="action-btn" onclick="alert('Referral system coming soon!')">👥<span>Referral</span></button>
+      </div>
+    </div>
+
+    <div class="prototype-box">
+      🎮 Prototype v0.2<br>
+      Next: Telegram login, cloud save, upgrades shop & leaderboard.
+    </div>
   </div>
 
-  <div class="energy-container">
-    <div style="font-size: 10px;">⚡ <span id="energy-text">100 / 100</span></div>
-    <div class="energy-bar-bg">
-      <div class="energy-fill" id="energy-fill"></div>
-    </div>
+  <!-- INVENTORY PAGE -->
+  <div id="page-inventory" class="page-content">
+    <div class="placeholder-title">📦 INVENTORY</div>
+    <div class="placeholder-text">Aapke mined items aur special tools yahan dikhenge. (Coming Soon!)</div>
+  </div>
+
+  <!-- SHOP PAGE -->
+  <div id="page-shop" class="page-content">
+    <div class="placeholder-title">🛒 UPGRADES SHOP</div>
+    <div class="placeholder-text">Yahan se aap apni mining power aur max energy ko upgrade kar sakenge!</div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div id="page-settings" class="page-content">
+    <div class="placeholder-title">⚙️ SETTINGS</div>
+    <div class="placeholder-text">Account details, sound options aur support settings yahan hongi.</div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="nav-bar">
+    <button class="nav-item active" onclick="switchTab('home', this)">
+      🏠<span>Home</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('inventory', this)">
+      🎒<span>Inventory</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('shop', this)">
+      🛒<span>Shop</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('settings', this)">
+      ⚙️<span>Settings</span>
+    </button>
   </div>
 
   <script>
@@ -131,20 +345,19 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      if (tg.initDataUnsafe?.user) {
-        document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
-      }
     }
 
     let ores = 0;
-    let energy = 100;
-    const maxEnergy = 100;
+    let energy = 12;
+    const maxEnergy = 12;
 
     const oreText = document.getElementById('ore-count');
-    const energyText = document.getElementById('energy-text');
+    const topCoinsText = document.getElementById('top-coins');
+    const topEnergyText = document.getElementById('top-energy');
     const energyFill = document.getElementById('energy-fill');
     const mineBtn = document.getElementById('mine-btn');
 
+    // Mining Action
     mineBtn.addEventListener('pointerdown', (e) => {
       if (energy <= 0) return;
 
@@ -161,26 +374,42 @@
 
     function updateUI() {
       oreText.innerText = ores;
-      energyText.innerText = `${energy} / ${maxEnergy}`;
+      topCoinsText.innerText = ores;
+      topEnergyText.innerText = `${energy}/${maxEnergy}`;
       energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
     }
 
+    // Floating animation on tap
     function showFloatingText(x, y, text) {
       const el = document.createElement('div');
       el.className = 'popup-text';
       el.innerText = text;
-      el.style.left = `${x - 15}px`;
-      el.style.top = `${y - 30}px`;
+      el.style.left = `${x - 10}px`;
+      el.style.top = `${y - 25}px`;
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 600);
     }
 
+    // Energy Regen (Har 2 second mein 1 energy wapas aayegi)
     setInterval(() => {
       if (energy < maxEnergy) {
         energy = Math.min(maxEnergy, energy + 1);
         updateUI();
       }
-    }, 1500);
+    }, 2000);
+
+    // Navigation Switcher Function
+    function switchTab(pageName, btnElement) {
+      document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+      });
+
+      document.getElementById('page-' + pageName).classList.add('active');
+      btnElement.classList.add('active');
+    }
   </script>
 </body>
 </html>
