@@ -1,60 +1,186 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>BlockCoin — Telegram Mini App v0.2</title>
-<script src="https://telegram.org/js/telegram-web-app.js?60"></script>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#071426;color:#fff;font-family:system-ui,Arial,sans-serif}
-.app{max-width:480px;margin:auto;min-height:100vh;background:linear-gradient(#0b2440,#071426);position:relative;padding-bottom:82px}
-.top{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:#09213a;border-bottom:2px solid #16476b}
-.brand{font-weight:900;letter-spacing:1px}.stats{display:flex;gap:8px}.pill{background:#102f4d;border:1px solid #23608b;border-radius:12px;padding:7px 10px;font-weight:800}
-.hero{margin:14px;border:2px solid #1e6791;border-radius:18px;overflow:hidden;background:#123b28}
-.scene{height:220px;position:relative;background:linear-gradient(#36a9ef 0 45%,#75c85a 45% 60%,#246b35 60%);image-rendering:pixelated}
-.sun{position:absolute;width:46px;height:46px;background:#ffe86b;right:35px;top:25px;box-shadow:0 0 0 8px #ffd45a}
-.mountain{position:absolute;bottom:75px;left:45px;width:170px;height:100px;background:#47718b;clip-path:polygon(0 100%,48% 0,100% 100%)} 
-.tree{position:absolute;bottom:42px;width:34px;height:78px;background:#75452a}.tree:before{content:"";position:absolute;width:70px;height:70px;left:-18px;top:-40px;background:#2f9b46;border:5px solid #19632f}
-.tree.t1{left:35px}.tree.t2{right:45px;transform:scale(.8)}
-.player{position:absolute;bottom:42px;left:50%;transform:translateX(-50%);font-size:52px;filter:drop-shadow(3px 3px #111)}
-.ground{position:absolute;bottom:0;left:0;right:0;height:42px;background:repeating-linear-gradient(90deg,#6f452d 0 18px,#815336 18px 36px);border-top:8px solid #63bb45}
-.panel{padding:14px}.coins{text-align:center;font-size:28px;font-weight:900;margin:4px 0 12px}.mine{width:100%;padding:16px;border:0;border-radius:14px;background:#35d15c;color:#06250e;font-size:21px;font-weight:1000;box-shadow:0 5px 0 #188b35;cursor:pointer}.mine:active{transform:translateY(4px);box-shadow:0 1px 0 #188b35}.energy{margin-top:12px}.bar{height:12px;background:#18334c;border-radius:99px;overflow:hidden}.fill{height:100%;background:#35cfff;width:100%}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.card{background:#0d2944;border:1px solid #205477;border-radius:12px;padding:10px;text-align:center;font-size:13px}.card b{display:block;font-size:22px;margin-bottom:3px}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#081a2d;border-top:2px solid #16476b}.nav button{border:0;background:none;color:#8ca9bf;padding:12px 4px;font-weight:800;cursor:pointer}.nav button.active{color:#fff}.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#132f4b;border:2px solid #35d15c;padding:10px 16px;border-radius:12px;font-weight:800;display:none}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Tap2Mine</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #1a1a24;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+      image-rendering: pixelated;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .score-container {
+      font-size: 20px;
+      color: #55ff55;
+      margin-top: 10px;
+      text-shadow: 2px 2px #000;
+    }
+
+    .mine-container {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .pixel-block {
+      width: 160px;
+      height: 160px;
+      background: #8b5a2b;
+      border: 8px solid #4a2f13;
+      box-shadow: inset 8px 8px #a76d35, inset -8px -8px #331e08, 0 10px 0 #000;
+      position: relative;
+      transition: transform 0.05s ease;
+    }
+
+    .pixel-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 40px;
+      background: #4ca634;
+      box-shadow: inset 4px 4px #6bd64d, inset -4px -4px #2f6920;
+    }
+
+    .pixel-block:active {
+      transform: scale(0.95);
+    }
+
+    .popup-text {
+      position: absolute;
+      color: #ffd700;
+      font-size: 16px;
+      animation: floatUp 0.6s ease-out forwards;
+      pointer-events: none;
+      text-shadow: 2px 2px #000;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-60px); }
+    }
+
+    .energy-container {
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .energy-bar-bg {
+      background: #222;
+      border: 4px solid #fff;
+      height: 24px;
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .energy-fill {
+      background: #ffaa00;
+      height: 100%;
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+  </style>
 </head>
 <body>
-<div class="app">
-  <div class="top"><div class="brand">⛏️ BLOCKCOIN</div><div class="stats"><div class="pill">🪙 <span id="coins">0</span></div><div class="pill">⚡ <span id="energy">12</span>/12</div></div></div>
-  <div id="tgUser" style="display:none;text-align:center;padding:6px 12px;background:#0d2944;color:#b9d8ee;font-size:13px"></div>
-  <section class="hero">
-    <div class="scene"><div class="sun"></div><div class="mountain"></div><div class="tree t1"></div><div class="tree t2"></div><div class="player">🧑‍🌾</div><div class="ground"></div></div>
-    <div class="panel">
-      <div class="coins">🪙 <span id="bigCoins">0</span> Coins</div>
-      <button class="mine" id="mine">⛏️ TAP TO MINE +10</button>
-      <div class="energy">Energy <div class="bar"><div class="fill" id="energyBar"></div></div></div>
-      <div class="cards">
-        <div class="card"><b>🎁</b>Daily Reward</div>
-        <div class="card"><b>📋</b>Missions</div>
-        <div class="card"><b>👥</b>Referral</div>
-      </div>
+
+  <div class="header">
+    <div id="username" style="font-size: 10px; color: #aaa;">Miner</div>
+    <div class="score-container">
+      💎 <span id="ore-count">0</span>
     </div>
-  </section>
-  <div class="panel"><div class="card" style="font-size:15px">🎮 <b style="display:inline;font-size:15px">Prototype v0.2</b><br><span id="tgStatus">Telegram connection ready.</span><br>Next: secure cloud save, missions, leaderboard and backend.</div></div>
-  <nav class="nav"><button class="active">🏠<br>Home</button><button>🎒<br>Inventory</button><button>🛒<br>Shop</button><button>⚙️<br>Settings</button></nav>
-</div>
-<div class="toast" id="toast">+10 Coins!</div>
-<script>
-const $ = id => document.getElementById(id);
-const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
-const tgUser = tg?.initDataUnsafe?.user;
-if (tgUser) { const el=$('tgUser'); el.style.display='block'; el.textContent='👤 Telegram: ' + (tgUser.first_name || 'Player') + (tgUser.username ? ' (@'+tgUser.username+')' : ''); $('tgStatus').textContent='✅ Telegram connected as ' + (tgUser.first_name || 'Player'); } else { $('tgStatus').textContent='ℹ️ Open this app inside Telegram for Telegram user info.'; }
-let storageKey = tgUser?.id ? 'bc_'+tgUser.id : 'bc_guest';
-let coins=Number(localStorage.getItem(storageKey+'_coins')||0), energy=Number(localStorage.getItem(storageKey+'_energy')||12);
-function render(){ $('coins').textContent=coins; $('bigCoins').textContent=coins; $('energy').textContent=energy; $('energyBar').style.width=(energy/12*100)+'%'; localStorage.setItem(storageKey+'_coins',coins); localStorage.setItem(storageKey+'_energy',energy);}
-$('mine').onclick=()=>{if(energy<=0){$('toast').textContent='⚡ No energy left!';$('toast').style.display='block';setTimeout(()=>location.reload(),900);return} coins+=10;energy--;render();$('toast').textContent='🪙 +10 Coins!';$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',600)};
-render();
-</script>
+  </div>
+
+  <div class="mine-container" id="mine-btn">
+    <div class="pixel-block" id="block"></div>
+  </div>
+
+  <div class="energy-container">
+    <div style="font-size: 10px;">⚡ <span id="energy-text">100 / 100</span></div>
+    <div class="energy-bar-bg">
+      <div class="energy-fill" id="energy-fill"></div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.initDataUnsafe?.user) {
+        document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
+      }
+    }
+
+    let ores = 0;
+    let energy = 100;
+    const maxEnergy = 100;
+
+    const oreText = document.getElementById('ore-count');
+    const energyText = document.getElementById('energy-text');
+    const energyFill = document.getElementById('energy-fill');
+    const mineBtn = document.getElementById('mine-btn');
+
+    mineBtn.addEventListener('pointerdown', (e) => {
+      if (energy <= 0) return;
+
+      ores += 1;
+      energy -= 1;
+      updateUI();
+
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+      }
+
+      showFloatingText(e.clientX, e.clientY, "+1");
+    });
+
+    function updateUI() {
+      oreText.innerText = ores;
+      energyText.innerText = `${energy} / ${maxEnergy}`;
+      energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
+    }
+
+    function showFloatingText(x, y, text) {
+      const el = document.createElement('div');
+      el.className = 'popup-text';
+      el.innerText = text;
+      el.style.left = `${x - 15}px`;
+      el.style.top = `${y - 30}px`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 600);
+    }
+
+    setInterval(() => {
+      if (energy < maxEnergy) {
+        energy = Math.min(maxEnergy, energy + 1);
+        updateUI();
+      }
+    }, 1500);
+  </script>
 </body>
 </html>
