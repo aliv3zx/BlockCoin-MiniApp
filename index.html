@@ -45,13 +45,13 @@
 </div>
 <div class="toast" id="toast">+10 Coins!</div>
 <script>
+const $ = id => document.getElementById(id);
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 const tgUser = tg?.initDataUnsafe?.user;
 if (tgUser) { const el=$('tgUser'); el.style.display='block'; el.textContent='👤 Telegram: ' + (tgUser.first_name || 'Player') + (tgUser.username ? ' (@'+tgUser.username+')' : ''); $('tgStatus').textContent='✅ Telegram connected as ' + (tgUser.first_name || 'Player'); } else { $('tgStatus').textContent='ℹ️ Open this app inside Telegram for Telegram user info.'; }
 let storageKey = tgUser?.id ? 'bc_'+tgUser.id : 'bc_guest';
 let coins=Number(localStorage.getItem(storageKey+'_coins')||0), energy=Number(localStorage.getItem(storageKey+'_energy')||12);
-const $=id=>document.getElementById(id);
 function render(){ $('coins').textContent=coins; $('bigCoins').textContent=coins; $('energy').textContent=energy; $('energyBar').style.width=(energy/12*100)+'%'; localStorage.setItem(storageKey+'_coins',coins); localStorage.setItem(storageKey+'_energy',energy);}
 $('mine').onclick=()=>{if(energy<=0){$('toast').textContent='⚡ No energy left!';$('toast').style.display='block';setTimeout(()=>location.reload(),900);return} coins+=10;energy--;render();$('toast').textContent='🪙 +10 Coins!';$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',600)};
 render();
