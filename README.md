@@ -1,4 +1,4 @@
-# BlockCoin Mini App — Prototype v0.1
+# Tap-To-Earn Mini App — Prototype v0.1
 
 This is a local playable prototype of the BlockCoin Telegram Mini App concept.
 
