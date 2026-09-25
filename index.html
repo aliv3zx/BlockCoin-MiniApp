@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>BlockCoin — Telegram Mini App Prototype</title>
+<title>BlockCoin — Telegram Mini App v0.2</title>
+<script src="https://telegram.org/js/telegram-web-app.js?60"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#071426;color:#fff;font-family:system-ui,Arial,sans-serif}
 .app{max-width:480px;margin:auto;min-height:100vh;background:linear-gradient(#0b2440,#071426);position:relative;padding-bottom:82px}
@@ -25,6 +26,7 @@
 <body>
 <div class="app">
   <div class="top"><div class="brand">⛏️ BLOCKCOIN</div><div class="stats"><div class="pill">🪙 <span id="coins">0</span></div><div class="pill">⚡ <span id="energy">12</span>/12</div></div></div>
+  <div id="tgUser" style="display:none;text-align:center;padding:6px 12px;background:#0d2944;color:#b9d8ee;font-size:13px"></div>
   <section class="hero">
     <div class="scene"><div class="sun"></div><div class="mountain"></div><div class="tree t1"></div><div class="tree t2"></div><div class="player">🧑‍🌾</div><div class="ground"></div></div>
     <div class="panel">
@@ -38,14 +40,19 @@
       </div>
     </div>
   </section>
-  <div class="panel"><div class="card" style="font-size:15px">🎮 <b style="display:inline;font-size:15px">Prototype v0.1</b><br>Next: Telegram login, cloud save, missions, leaderboard and real backend.</div></div>
+  <div class="panel"><div class="card" style="font-size:15px">🎮 <b style="display:inline;font-size:15px">Prototype v0.2</b><br><span id="tgStatus">Telegram connection ready.</span><br>Next: secure cloud save, missions, leaderboard and backend.</div></div>
   <nav class="nav"><button class="active">🏠<br>Home</button><button>🎒<br>Inventory</button><button>🛒<br>Shop</button><button>⚙️<br>Settings</button></nav>
 </div>
 <div class="toast" id="toast">+10 Coins!</div>
 <script>
-let coins=Number(localStorage.getItem('bc_coins')||0), energy=Number(localStorage.getItem('bc_energy')||12);
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+const tgUser = tg?.initDataUnsafe?.user;
+if (tgUser) { const el=$('tgUser'); el.style.display='block'; el.textContent='👤 Telegram: ' + (tgUser.first_name || 'Player') + (tgUser.username ? ' (@'+tgUser.username+')' : ''); $('tgStatus').textContent='✅ Telegram connected as ' + (tgUser.first_name || 'Player'); } else { $('tgStatus').textContent='ℹ️ Open this app inside Telegram for Telegram user info.'; }
+let storageKey = tgUser?.id ? 'bc_'+tgUser.id : 'bc_guest';
+let coins=Number(localStorage.getItem(storageKey+'_coins')||0), energy=Number(localStorage.getItem(storageKey+'_energy')||12);
 const $=id=>document.getElementById(id);
-function render(){ $('coins').textContent=coins; $('bigCoins').textContent=coins; $('energy').textContent=energy; $('energyBar').style.width=(energy/12*100)+'%'; localStorage.setItem('bc_coins',coins); localStorage.setItem('bc_energy',energy);}
+function render(){ $('coins').textContent=coins; $('bigCoins').textContent=coins; $('energy').textContent=energy; $('energyBar').style.width=(energy/12*100)+'%'; localStorage.setItem(storageKey+'_coins',coins); localStorage.setItem(storageKey+'_energy',energy);}
 $('mine').onclick=()=>{if(energy<=0){$('toast').textContent='⚡ No energy left!';$('toast').style.display='block';setTimeout(()=>location.reload(),900);return} coins+=10;energy--;render();$('toast').textContent='🪙 +10 Coins!';$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',600)};
 render();
 </script>
